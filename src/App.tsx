@@ -72,7 +72,7 @@ export default () => {
           isLoading ? '' :
           <Routes>
             <Route path="/" element={ user ? <Popular user={user} /> : <Home /> } />
-            <Route path="/favories" element={ user ? <Favories /> : <Error404 /> } />
+            <Route path="/favories" element={ user ? <Favories user={user} /> : <Error404 /> } />
   
             <Route path="/login" element={ <Login user={user} setUser={setUser} /> } />
           </Routes>

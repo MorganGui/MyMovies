@@ -4,6 +4,7 @@ import Input from '../components/Input'
 
 import Movie from '../classes/Movie'
 import User from '../classes/User'
+import Swal from 'sweetalert2'
 
 export default ({ user }: { user: User }) => {
   const [movies, setMovies] = useState([] as Movie[])
@@ -23,10 +24,14 @@ export default ({ user }: { user: User }) => {
         setMovies(res)
       })
     } else {
-      Movie.search(user.token, newVal).then(res => {
+      Movie.getSearched(user.token, newVal).then(res => {
         setMovies(res)
       })
     }
+  }
+
+  async function toggleFavorie(movie: Movie) {
+    await movie.toggleFavorite(user.token, user.id)
   }
 
   return (
@@ -40,7 +45,7 @@ export default ({ user }: { user: User }) => {
             if (movie.img) return (
               <div className="p-relative" key={index}>
                 <img src={`https://image.tmdb.org/t/p/w500${movie.img}`} />
-                <i className="button-fav fa-regular fa-heart fa-xl"></i>
+                <i className="button-fav fa-regular fa-heart fa-xl" onClick={() => toggleFavorie(movie)} />
               </div>
             )
           })

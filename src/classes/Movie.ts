@@ -1,14 +1,18 @@
 export default class Movie {
+  id: number
   title: string
   img: string
+  favorite: boolean
 
-  constructor(title: string, img: string) {
+  constructor(id: number, title: string, img: string, favorite: boolean) {
+    this.id = id
     this.title = title
     this.img = img
+    this.favorite = favorite
   }
 
   private static dataToInstance(data: any) {
-    return new Movie(data.title, data.poster_path)
+    return new Movie(data.id, data.title, data.poster_path, false)
   }
 
   static async getPopular(token: string) {
@@ -22,7 +26,7 @@ export default class Movie {
       }
     }
 
-    const res = await fetch('https://api.themoviedb.org/3/movie/popular', options)
+    const res = await fetch('https://api.themoviedb.org/3/movie/popular?language=fr-FR', options)
     if (res.status === 200) {
       const data = await res.json()
       for (const result of data.results) {
@@ -32,8 +36,7 @@ export default class Movie {
 
     return list
   }
-
-  static async search(token: string, search: string) {
+  static async getSearched(token: string, search: string) {
     const list: Movie[] = []
 
     const options = {
@@ -44,7 +47,7 @@ export default class Movie {
       }
     }
 
-    const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${search.replaceAll(' ', '+')}`, options)
+    const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${search.replaceAll(' ', '+')}&language=fr-FR`, options)
     if (res.status === 200) {
       const data = await res.json()
       for (const result of data.results) {
@@ -55,18 +58,38 @@ export default class Movie {
     return list
   }
 
-  static async addFavorite(userId: number, token: string) {
+  async toggleFavorite(token: string, userId: number) {
     const options = {
       method: 'POST',
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
         Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({media_type: 'movie', media_id: this.id, favorite: !this.favorite})
+    }
+
+    await fetch(`https://api.themoviedb.org/3/account/${userId}/favorite`, options)
+  }
+  static async getFavorite(token: string, userId: number) {
+    const list: Movie[] = []
+
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${token}`
       }
     }
-    
-    fetch(`https://api.themoviedb.org/3/account/${userId}/favorite`, options)
-      .then(response => response.json())
-      .then(response => console.log(response))
+
+    const res = await fetch(`https://api.themoviedb.org/3/account/${userId}/favorite/movies?language=fr-FR`, options)
+    if (res.status === 200) {
+      const data = await res.json()
+      for (const result of data.results) {
+        list.push(this.dataToInstance(result))
+      }
+    }
+
+    return list
   }
 }
