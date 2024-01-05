@@ -47,7 +47,9 @@ export default () => {
     navigate('/')
   }
   function debug() {
-    console.log(user)
+    console.log('User')
+    console.log(`id : ${user?.id}`)
+    console.log(`token : ${user?.token}`)
   }
 
   return (
