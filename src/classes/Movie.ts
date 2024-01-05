@@ -34,6 +34,13 @@ export default class Movie {
       }
     }
 
+    await Promise.all(list.map(async movie => {
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/account_states`, options)
+      const data = await res.json()
+      movie.favorite = data.favorite
+      return movie
+    }))
+
     return list
   }
   static async getSearched(token: string, search: string) {
@@ -55,10 +62,19 @@ export default class Movie {
       }
     }
 
+    await Promise.all(list.map(async movie => {
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/account_states`, options)
+      const data = await res.json()
+      movie.favorite = data.favorite
+      return movie
+    }))
+
     return list
   }
 
   async toggleFavorite(token: string, userId: number) {
+    this.favorite = !this.favorite
+
     const options = {
       method: 'POST',
       headers: {
@@ -66,7 +82,7 @@ export default class Movie {
         'content-type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({media_type: 'movie', media_id: this.id, favorite: !this.favorite})
+      body: JSON.stringify({media_type: 'movie', media_id: this.id, favorite: this.favorite})
     }
 
     await fetch(`https://api.themoviedb.org/3/account/${userId}/favorite`, options)
@@ -89,6 +105,13 @@ export default class Movie {
         list.push(this.dataToInstance(result))
       }
     }
+
+    await Promise.all(list.map(async movie => {
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/account_states`, options)
+      const data = await res.json()
+      movie.favorite = data.favorite
+      return movie
+    }))
 
     return list
   }
