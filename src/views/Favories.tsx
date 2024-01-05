@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import Movie from '../classes/Movie'
 import User from '../classes/User'
+import Swal from 'sweetalert2'
 
 export default ({ user }: { user: User }) => {
   const [movies, setMovies] = useState([] as Movie[])
@@ -13,7 +14,9 @@ export default ({ user }: { user: User }) => {
   }, [movies])
 
   async function toggleFavorie(movie: Movie) {
+    Swal.showLoading()
     await movie.toggleFavorite(user.token, user.id)
+    Swal.close()
   }
 
   return (

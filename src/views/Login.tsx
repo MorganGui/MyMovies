@@ -22,7 +22,7 @@ export default ({ user, setUser }: { user: User | null, setUser: Function }) => 
 
     Swal.showLoading()
     const user = await User.getAuth(parseFloat(userId), token)
-    Swal.hideLoading()
+    Swal.close()
 
     if (user) {
     localStorage.setItem('account-id', userId)
